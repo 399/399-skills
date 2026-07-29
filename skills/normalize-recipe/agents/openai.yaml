@@ -1,0 +1,4 @@
+interface:
+  display_name: "规范食谱整理"
+  short_description: "将视频总结和图文教程提炼为统一、可靠的 Obsidian 食谱"
+  default_prompt: "使用 $normalize-recipe 将这份美食教程整理成规范的 Obsidian 食谱。"
