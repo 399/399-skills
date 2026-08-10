@@ -6,18 +6,81 @@ agent_created: true
 
 # Scrapling Web Scraping Skill
 
-## Environment
+## Pre-flight Check (MANDATORY -- run before ANY scraping task)
 
-Scrapling is installed in an isolated Python 3.13 venv. Always use these absolute paths:
+Before executing any scraping code, check whether Scrapling is installed. If not, guide the user through installation.
 
-| Component | Path |
-|---|---|
-| **Python** | `/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/python3` |
-| **CLI** | `/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/scrapling` |
+### Step 1: Detect Managed Python
 
-The `scrapling[all]` package is installed, which includes Fetchers, Spiders, MCP/AI integration, interactive shell, Playwright, patchright, curl_cffi, and all browser dependencies.
+Check for WorkBuddy's managed Python 3.13 (preferred):
 
-**All scraping scripts must be run with this Python path.** Do NOT use the system Python.
+```bash
+ls $HOME/.workbuddy/binaries/python/versions/3.13.*/bin/python3 2>/dev/null
+```
+
+If found, use it as `MANAGED_PYTHON`. Otherwise, fall back to system Python and verify version >= 3.10:
+
+```bash
+python3 --version 2>/dev/null || python3 -c "import sys; assert sys.version_info >= (3,10), 'Need Python 3.10+'"
+```
+
+### Step 2: Check for Existing Scrapling Installation
+
+```bash
+$MANAGED_PYTHON -c "import scrapling; print(scrapling.__version__)" 2>/dev/null
+```
+
+If the above succeeds, Scrapling is ready. Skip to "Using Scrapling".
+
+Also check if a dedicated venv already exists:
+
+```bash
+test -f $HOME/.workbuddy/binaries/python/envs/scrapling/bin/python3 && echo "VENV_EXISTS"
+```
+
+### Step 3: Install (if missing)
+
+If Scrapling is NOT installed, **guide the user through these steps** -- never auto-install without asking:
+
+**With managed Python (WorkBuddy environment):**
+
+```bash
+# Create venv
+$MANAGED_PYTHON -m venv $HOME/.workbuddy/binaries/python/envs/scrapling
+
+# Install Scrapling with all features
+$HOME/.workbuddy/binaries/python/envs/scrapling/bin/pip install "scrapling[all]"
+
+# Install browser dependencies (Playwright Chromium etc.)
+$HOME/.workbuddy/binaries/python/envs/scrapling/bin/scrapling install
+```
+
+**Without managed Python (fallback -- system Python 3.10+):**
+
+```bash
+python3 -m venv $HOME/.scrapling-venv
+$HOME/.scrapling-venv/bin/pip install "scrapling[all]"
+$HOME/.scrapling-venv/bin/scrapling install
+```
+
+After installation, verify:
+
+```bash
+$PYTHON_PATH -c "from scrapling import Fetcher; from scrapling.fetchers import StealthyFetcher; print('OK')"
+```
+
+### Step 4: Determine Runtime Paths
+
+Once installed, resolve the active paths:
+
+| Component | Managed Python path | Fallback path |
+|---|---|---|
+| **Python** | `$HOME/.workbuddy/binaries/python/envs/scrapling/bin/python3` | `$HOME/.scrapling-venv/bin/python3` |
+| **CLI** | `$HOME/.workbuddy/binaries/python/envs/scrapling/bin/scrapling` | `$HOME/.scrapling-venv/bin/scrapling` |
+
+Store the resolved Python path in a variable (e.g., `SCRAPLING_PYTHON`) and use it for all subsequent commands.
+
+**All scraping scripts must use this resolved Python path.** Never use bare `python3`.
 
 ## When to Use Which Fetcher
 
@@ -112,18 +175,20 @@ result.items.to_json("output.json")
 
 ## CLI Quick Reference
 
+In all CLI examples below, `$SCRAPLING_CLI` refers to the resolved CLI path from the pre-flight check.
+
 ```bash
 # Interactive scraping shell
-/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/scrapling shell
+$SCRAPLING_CLI shell
 
 # Extract page content to markdown
-/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/scrapling extract get 'https://example.com' output.md
+$SCRAPLING_CLI extract get 'https://example.com' output.md
 
 # Extract with stealth mode
-/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/scrapling extract fetch 'https://example.com' output.md
+$SCRAPLING_CLI extract fetch 'https://example.com' output.md
 
 # Dynamic page extraction (no headless = show browser)
-/Users/kane/.workbuddy/binaries/python/envs/scrapling/bin/scrapling extract fetch 'https://example.com' output.md --no-headless
+$SCRAPLING_CLI extract fetch 'https://example.com' output.md --no-headless
 ```
 
 ## Adaptive Selectors (Resilience)
@@ -178,4 +243,10 @@ el.markdown()    # Convert inner HTML to markdown
 
 ## Reference Script
 
-A reusable scraping template is available at `scripts/scrape_template.py` within this skill. Use it as a starting point for custom scraping tasks by copying and modifying it.
+A reusable scraping template is available at `scripts/scrape_template.py` within this skill. To use it:
+
+1. Copy it to the working directory
+2. Update the shebang line to `$SCRAPLING_PYTHON` (from the pre-flight check)
+3. Run with `$SCRAPLING_PYTHON scrape_template.py single <url>`
+
+The template supports four CLI modes: `single`, `stealthy`, `list`, `dynamic`.
