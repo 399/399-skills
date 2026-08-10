@@ -7,6 +7,7 @@
 | Skill | 用途 |
 |---|---|
 | [`normalize-recipe`](skills/normalize-recipe/) | 将视频总结、图文教程、转录稿或零散烹饪笔记整理为规范的 Obsidian 食谱 |
+| [`scrapling`](skills/scrapling/) | 基于 Scrapling 框架的网页抓取能力——支持静态页面、隐身模式（绕过 Cloudflare）、动态 JS 渲染、多页爬虫 |
 
 ## 仓库结构
 
@@ -14,9 +15,9 @@
 skills/
 └── <skill-name>/
     ├── SKILL.md
-    ├── agents/
-    │   └── openai.yaml
-    └── references/
+    ├── agents/          (可选，Codex Agent 配置)
+    ├── scripts/         (可选，可执行脚本)
+    └── references/      (可选，参考文档)
 ```
 
 每个 `skills/<skill-name>/` 都是可以独立安装的完整 Skill。仓库根目录的本文件负责提供总目录和使用说明；各 Skill 不额外维护 README，其用途、触发场景和运行规则分别记录在 `SKILL.md` 与 `agents/openai.yaml` 中。
