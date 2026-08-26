@@ -1,0 +1,4 @@
+interface:
+  display_name: "内容蒸馏"
+  short_description: "深度理解长内容，提取可验证、可追溯且有边界的高价值知识"
+  default_prompt: "Use $distill-content to deeply analyze this source and produce a traceable, critical synthesis."

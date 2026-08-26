@@ -11,6 +11,7 @@
 
 | Skill | 用途 |
 |---|---|
+| [`distill-content`](skills/distill-content/) | 深度获取、理解和蒸馏长内容，生成可验证、可追溯且包含适用边界的高价值成果 |
 | [`normalize-recipe`](skills/normalize-recipe/) | 将视频总结、图文教程、转录稿或零散烹饪笔记整理为规范的 Obsidian 食谱 |
 | [`scrapling`](skills/scrapling/) | 基于 Scrapling 框架的网页抓取能力——支持静态页面、隐身模式（绕过 Cloudflare）、动态 JS 渲染、多页爬虫 |
 
