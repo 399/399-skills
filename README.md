@@ -11,6 +11,7 @@
 
 | Skill | 用途 |
 |---|---|
+| [`mail-organizer`](skills/mail-organizer/)（邮箱整理） | 按用途分类邮件，用星标管理重要待办；重点关注账户删除、闲置账户和域名续费，疑似垃圾逐项确认后处理 |
 | [`distill-content`](skills/distill-content/) | 深度获取、理解和蒸馏长内容，生成可验证、可追溯且包含适用边界的高价值成果 |
 | [`normalize-recipe`](skills/normalize-recipe/) | 将视频总结、图文教程、转录稿或零散烹饪笔记整理为规范的 Obsidian 食谱 |
 | [`scrapling`](skills/scrapling/) | 基于 Scrapling 框架的网页抓取能力——支持静态页面、隐身模式（绕过 Cloudflare）、动态 JS 渲染、多页爬虫 |
