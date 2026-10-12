@@ -13,8 +13,12 @@
 |---|---|
 | [`mail-organizer`](skills/mail-organizer/)（邮箱整理） | 按用途分类邮件，用星标管理重要待办；重点关注账户删除、闲置账户和域名续费，疑似垃圾逐项确认后处理 |
 | [`distill-content`](skills/distill-content/) | 深度获取、理解和蒸馏长内容，生成可验证、可追溯且包含适用边界的高价值成果 |
+| [`article-to-obsidian`](skills/article-to-obsidian/)（文章收藏整理） | 读取正文、配图和完整评论，筛选必要图片，分开作者观点与疑点，生成 Obsidian 收藏笔记；采集目录须由用户指定 |
+| [`neo-xhs-complete-read`](skills/neo-xhs-complete-read/) | 使用 BrowserOS neo 完整读取小红书正文、逐张视觉读图并展开评论回复，检查覆盖范围 |
 | [`normalize-recipe`](skills/normalize-recipe/) | 将视频总结、图文教程、转录稿或零散烹饪笔记整理为规范的 Obsidian 食谱 |
 | [`scrapling`](skills/scrapling/) | 基于 Scrapling 框架的网页抓取能力——支持静态页面、隐身模式（绕过 Cloudflare）、动态 JS 渲染、多页爬虫 |
+
+`article-to-obsidian` 和 `neo-xhs-complete-read` 需要已连接的 BrowserOS neo 及其 `browseros-neo` Skill。建议一起安装这两个 Skill：前者负责整理与入库，后者提供小红书完整读取流程。图片辅助脚本使用 macOS 的 `sips`；其他系统需使用可用的本地图像处理工具。采集目录由用户提供，最终只同步笔记和必要配图。
 
 ## 工作 Skill
 
