@@ -12,9 +12,9 @@ description: "读取小红书正文、按顺序检查配图，并展开评论回
 ## Steps
 1. Call the mark_skill_run tool with name: neo-xhs-complete-read so this run is recorded.
 2. 先用 browser.pages.list() 查找本任务页面，必要时 browser.open(用户提供的链接)。用 page.read() 读取正文，用 page.snapshot() 观察实际页面和交互控件，保留来源与作者。
-3. 用 page.evaluate() 在当前笔记的轮播容器内枚举 .swiper-slide:not(.swiper-slide-duplicate) img，保持页序并去重。读取 currentSrc || src；lazy 图片的 currentSrc 可能为空，不要把空字符串当作原图。按本次页面结构核对图片数量。
+3. 先按当前 URL 的笔记 ID 读取 `__INITIAL_STATE__` 对应的笔记对象和 `imageList`，核对对象 ID；不取 `noteDetailMap` 最后一项。再枚举当前笔记轮播的 `.swiper-slide:not(.swiper-slide-duplicate) img`，按 `currentSrc || src` 与页面总数、原帖顺序交叉核对。数据不存在才退回 DOM，数据指向别的笔记时先停止并重新定位；数量不符须查清加载状态，不能截断、合并或重排。仅消除轮播克隆；正文里重复出现的图片仍保留各自页码。具体步骤和辅助脚本见 `article-to-obsidian/references/image-inventory.md`。
 4. 优先让视觉模型读取逐张原图或清晰的分块截图。若工具返回了截图但模型输入明确移除了图片，不得声称看过像素，也不得用正文猜图片内容。
-5. 截图附件未进入模型输入时，通过 Neo 页面实际取得的图片 URL 下载原图，保存到用户指定目录，再用本地 `view_image` 视觉读取。实测一部分原始 WebP 可直接显示；较大图和宽 900、质量 60 的 JPEG 仍失败，但宽 540 像素、JPEG 质量 30 的预览成功。数字、单位和小字从原图局部裁切，以更高质量再次视觉核对；不能只把低清预览放大。具体 Neo fetch/FileReader、本地解码脚本和 sips 裁切步骤见 `article-to-obsidian` 的 `references/image-vision.md`。独立使用本 skill 时也必须遵守目录约定；每张都要实际看见像素，文件成功或 OCR 成功不等于读图成功。
+5. 截图附件未进入模型输入时，通过 Neo 页面实际取得的图片 URL 下载原图，保存到用户指定目录。每图固定原帖序号，核对 MIME、文件头和字节数，再完整解码；通过后才从该目录内暂存区发布正式文件和校验记录。最多并发 2 张、每张最多尝试 3 次，只补失败项；不得将下载成功当作视觉阅读完成。随后用本地 `view_image` 视觉读取。实测一部分原始 WebP 可直接显示；较大图和宽 900、质量 60 的 JPEG 仍失败，但宽 540 像素、JPEG 质量 30 的预览成功。数字、单位和小字从原图局部裁切，以更高质量再次视觉核对；不能只把低清预览放大。具体 Neo fetch/FileReader、本地解码脚本和 sips 裁切步骤见 `article-to-obsidian` 的 `references/image-vision.md`。独立使用本 skill 时也必须遵守目录约定；每张都要实际看见像素，文件成功或 OCR 成功不等于读图成功。
 6. 文字配图可以用 Neo 内本地运行的 Tesseract.js 备用 OCR。在独立 about:blank 标签中载入 https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js，用 Tesseract.createWorker('chi_sim+eng',1,{logger:...}) 初始化。把初始化 Promise 和状态保存在 window 上，分次读取状态，避免超过单次 run 的 30 秒。
 7. 将观察到的原图 URL 依次交给浏览器内 OCR worker.recognize()。计算在浏览器内完成，不把图片提交给云端 OCR 服务。每张记录页码、文本、识别置信度；非文字图表仍需视觉模型分析，OCR 不能替代。
 8. 交叉核对 OCR 的数字、单位、否定词及与正文重复的段落，尤其防止 4.5 被识别成 45。低置信度或无法核对的位置明确标记，不能补写猜测。先核对全部图片的成功状态，再生成摘要。
@@ -28,3 +28,5 @@ description: "读取小红书正文、按顺序检查配图，并展开评论回
 - 15 图测试实际逐张视觉读取成功：原始 WebP → 必要时宽 540、质量 30 的 JPEG 预览 → 原图局部裁切确认小字。更早的截图和宽 900、质量 60 的版本曾被网关移除，不能笼统写成“缩小 JPEG 无效”，也不能把这组参数当普遍保证。
 - 同一测试展开回复并滚动到底后读到 38 条唯一评论，与页面总数匹配，且无剩余展开控件、出现 THE END。该证据只适用于当次网页可见范围。
 - 页面显示的数字可能是点赞数而不是回复数，须根据控件和层级确认。
+
+- 2026-10-13 加入页面数据与 DOM 双重核对、完整解码、逐图哈希记录和补采规则；新逻辑通过合成数据测试，尚未以新的网页采集再次验证。CDN 地址重写未启用，仍使用页面给出的有效链接。

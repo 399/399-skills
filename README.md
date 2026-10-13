@@ -18,7 +18,7 @@
 | [`normalize-recipe`](skills/normalize-recipe/) | 将视频总结、图文教程、转录稿或零散烹饪笔记整理为规范的 Obsidian 食谱 |
 | [`scrapling`](skills/scrapling/) | 基于 Scrapling 框架的网页抓取能力——支持静态页面、隐身模式（绕过 Cloudflare）、动态 JS 渲染、多页爬虫 |
 
-`article-to-obsidian` 和 `neo-xhs-complete-read` 需要已连接的 BrowserOS neo 及其 `browseros-neo` Skill。建议一起安装这两个 Skill：前者负责整理与入库，后者提供小红书完整读取流程。图片辅助脚本使用 macOS 的 `sips`；其他系统需使用可用的本地图像处理工具。采集目录由用户提供，最终只同步笔记和必要配图。
+`article-to-obsidian` 和 `neo-xhs-complete-read` 需要已连接的 BrowserOS neo 及其 `browseros-neo` Skill。建议一起安装这两个 Skill：前者负责整理与入库，后者提供小红书完整读取流程。图片辅助脚本使用 Pillow 完整解码校验，并使用 macOS 的 `sips` 生成预览；其他系统需使用可用的本地图像处理工具。采集目录由用户提供，最终只同步笔记和必要配图。
 
 ## 工作 Skill
 
